@@ -1,0 +1,93 @@
+Ass 3 da
+b2
+import pandas as pd
+import re
+from textblob import TextBlob
+
+# i. Read the dataset and perform data cleaning operations
+data = pd.read_csv("covid_2021_1.csv")
+
+# Removing any rows with missing values in the 'comment' column
+data = data.dropna(subset=['comment'])
+
+# Removing special characters, numbers, and extra spaces from comments
+data['clean_comment'] = data['comment'].apply(lambda x: re.sub(r'[^a-zA-Z\s]', '', str(x)))
+data['clean_comment'] = data['clean_comment'].apply(lambda x: re.sub(r'\s+', ' ', str(x)))
+
+# ii. Tokenize the comments in words
+data['tokenized_comment'] = data['clean_comment'].apply(lambda x: x.split())
+
+# iii. Perform sentiment analysis and find the percentage of positive, negative, and neutral comments
+positive_comments = 0
+negative_comments = 0
+neutral_comments = 0
+
+for comment in data['clean_comment']:
+    analysis = TextBlob(comment)
+    if analysis.sentiment.polarity > 0:
+        positive_comments += 1
+    elif analysis.sentiment.polarity < 0:
+        negative_comments += 1
+    else:
+        neutral_comments += 1
+
+total_comments = len(data)
+positive_percentage = (positive_comments / total_comments) * 100
+negative_percentage = (negative_comments / total_comments) * 100
+neutral_percentage = (neutral_comments / total_comments) * 100
+
+print("Percentage of positive comments: {:.2f}%".format(positive_percentage))
+print("Percentage of negative comments: {:.2f}%".format(negative_percentage))
+print("Percentage of neutral comments: {:.2f}%".format(neutral_percentage))
+
+
+B3
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# i. Read the dataset and perform data cleaning operations
+data = pd.read_csv("INvideos.csv")
+
+# Dropping rows with missing values
+data.dropna(inplace=True)
+
+# ii. Find the total views, total likes, total dislikes, and comment count
+total_views = data['views'].sum()
+total_likes = data['likes'].sum()
+total_dislikes = data['dislikes'].sum()
+total_comments = data['comment_count'].sum()
+
+print("Total Views:", total_views)
+print("Total Likes:", total_likes)
+print("Total Dislikes:", total_dislikes)
+print("Total Comments:", total_comments)
+
+# iii. Find the least and topmost liked and commented videos
+least_liked_video = data.loc[data['likes'].idxmin()]
+top_liked_video = data.loc[data['likes'].idxmax()]
+least_commented_video = data.loc[data['comment_count'].idxmin()]
+top_commented_video = data.loc[data['comment_count'].idxmax()]
+
+print("\nLeast Liked Video:")
+print(least_liked_video[['title', 'likes']])
+print("\nTop Liked Video:")
+print(top_liked_video[['title', 'likes']])
+print("\nLeast Commented Video:")
+print(least_commented_video[['title', 'comment_count']])
+print("\nTop Commented Video:")
+print(top_commented_video[['title', 'comment_count']])
+
+# iv. Perform year-wise statistics for views and plot the analyzed data
+data['trending_date'] = pd.to_datetime(data['trending_date'], format='%y.%d.%m')
+data['year'] = data['trending_date'].dt.year
+
+yearly_views = data.groupby('year')['views'].sum()
+yearly_views.plot(kind='bar', xlabel='Year', ylabel='Total Views', title='Year-wise Total Views')
+plt.show()
+
+# v. Plot the viewers who reacted on videos
+reaction_labels = ['likes', 'dislikes', 'comment_count']
+reactions = data[reaction_labels].sum()
+reactions.plot(kind='pie', autopct='%1.1f%%', startangle=140, title='Viewers Reaction')
+plt.axis('equal')
+plt.show()
