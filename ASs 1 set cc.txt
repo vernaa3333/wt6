@@ -1,0 +1,411 @@
+ASs 1 set c
+
+
+
+c1
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+
+public class C1 extends JFrame {
+
+    private Map<String, String> cityCodes;
+
+    private JTextField cityNameTextField;
+    private JTextField stdCodeTextField;
+
+    public C1() {
+        cityCodes = new HashMap<>();
+
+        setTitle("City Code App");
+        setSize(400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initUI();
+    }
+
+    private void initUI() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        cityNameTextField = new JTextField(20);
+        stdCodeTextField = new JTextField(20);
+
+        JButton addButton = new JButton("Add City");
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addCity();
+            }
+        });
+
+        JButton removeButton = new JButton("Remove City");
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeCity();
+            }
+        });
+
+        JButton searchButton = new JButton("Search City");
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchCity();
+            }
+        });
+
+        panel.add(new JLabel("City Name:"));
+        panel.add(cityNameTextField);
+        panel.add(new JLabel("STD Code:"));
+        panel.add(stdCodeTextField);
+        panel.add(addButton);
+        panel.add(removeButton);
+        panel.add(searchButton);
+
+        add(panel);
+    }
+
+    private void addCity() {
+        String cityName = cityNameTextField.getText().trim();
+        String stdCode = stdCodeTextField.getText().trim();
+
+        if (!cityName.isEmpty() && !stdCode.isEmpty()) {
+            if (!cityCodes.containsKey(cityName)) {
+                cityCodes.put(cityName, stdCode);
+                JOptionPane.showMessageDialog(this, "City added successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "City already exists. Please use a different name.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please enter both City Name and STD Code.");
+        }
+
+        clearFields();
+    }
+
+    private void removeCity() {
+        String cityName = cityNameTextField.getText().trim();
+
+        if (!cityName.isEmpty()) {
+            if (cityCodes.containsKey(cityName)) {
+                cityCodes.remove(cityName);
+                JOptionPane.showMessageDialog(this, "City removed successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "City not found in the collection.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please enter City Name to remove.");
+        }
+
+        clearFields();
+    }
+
+    private void searchCity() {
+        String cityName = cityNameTextField.getText().trim();
+
+        if (!cityName.isEmpty()) {
+            if (cityCodes.containsKey(cityName)) {
+                String stdCode = cityCodes.get(cityName);
+                JOptionPane.showMessageDialog(this, "STD Code for " + cityName + ": " + stdCode);
+            } else {
+                JOptionPane.showMessageDialog(this, "City not found in the collection.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please enter City Name to search.");
+        }
+
+        clearFields();
+    }
+
+    private void clearFields() {
+        cityNameTextField.setText("");
+        stdCodeTextField.setText("");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                C1 app = new C1();
+                app.setVisible(true);
+            }
+        });
+    }
+}
+
+
+C2
+
+import java.util.LinkedList;
+
+public class C2 {
+    public static void main(String[] args) {
+        LinkedList<Integer> linkedList = new LinkedList<>();
+
+        linkedList.addFirst(10);
+        linkedList.addFirst(20);
+        linkedList.addFirst(30);
+
+        System.out.println("\nList: " + linkedList);
+        System.out.println("Size of the linked list: " + linkedList.size());
+
+        if (!linkedList.isEmpty()) {
+            linkedList.removeLast();
+        }
+
+        System.out.println("\nList: " + linkedList);
+        System.out.println("Size of the linked list after deletion: " + linkedList.size());
+    }
+}
+
+
+C3
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class C3 {
+
+    private static List<String> lines = new ArrayList<>();
+    private static String filePath;
+
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Usage: java TextFileEditor <file_path>");
+            System.exit(1);
+        }
+
+        filePath = args[0];
+        loadFile();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            displayMenu();
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    insertLine(scanner);
+                    break;
+                case 2:
+                    deleteLine(scanner);
+                    break;
+                case 3:
+                    appendLine(scanner);
+                    break;
+                case 4:
+                    modifyLine(scanner);
+                    break;
+                case 5:
+                    saveAndExit();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
+
+    private static void displayMenu() {
+        System.out.println("Menu:");
+        System.out.println("1. Insert line");
+        System.out.println("2. Delete line");
+        System.out.println("3. Append line");
+        System.out.println("4. Modify line");
+        System.out.println("5. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static void loadFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void insertLine(Scanner scanner) {
+        System.out.print("Enter the line to insert: ");
+        String newLine = scanner.nextLine();
+        System.out.print("Enter the line number to insert before: ");
+        int lineNumber = scanner.nextInt();
+        lines.add(lineNumber - 1, newLine);
+    }
+
+    private static void deleteLine(Scanner scanner) {
+        System.out.print("Enter the line number to delete: ");
+        int lineNumber = scanner.nextInt();
+        if (lineNumber > 0 && lineNumber <= lines.size()) {
+            lines.remove(lineNumber - 1);
+        } else {
+            System.out.println("Invalid line number.");
+        }
+    }
+
+    private static void appendLine(Scanner scanner) {
+        System.out.print("Enter the line to append: ");
+        String newLine = scanner.nextLine();
+        lines.add(newLine);
+    }
+
+    private static void modifyLine(Scanner scanner) {
+        System.out.print("Enter the line number to modify: ");
+        int lineNumber = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        if (lineNumber > 0 && lineNumber <= lines.size()) {
+            System.out.print("Enter the new content for the line: ");
+            String modifiedLine = scanner.nextLine();
+            lines.set(lineNumber - 1, modifiedLine);
+        } else {
+            System.out.println("Invalid line number.");
+        }
+    }
+
+    private static void saveAndExit() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("File saved. Exiting program.");
+        System.exit(0);
+    }
+}
+
+C3
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class C3 {
+
+    private static List<String> lines = new ArrayList<>();
+    private static String filePath;
+
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Usage: java TextFileEditor >");
+            System.exit(1);
+        }
+
+        filePath = args[0];
+        loadFile();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            displayMenu();
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    insertLine(scanner);
+                    break;
+                case 2:
+                    deleteLine(scanner);
+                    break;
+                case 3:
+                    appendLine(scanner);
+                    break;
+                case 4:
+                    modifyLine(scanner);
+                    break;
+                case 5:
+                    saveAndExit();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
+
+    private static void displayMenu() {
+        System.out.println("Menu:");
+        System.out.println("1. Insert line");
+        System.out.println("2. Delete line");
+        System.out.println("3. Append line");
+        System.out.println("4. Modify line");
+        System.out.println("5. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static void loadFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void insertLine(Scanner scanner) {
+        System.out.print("Enter the line to insert: ");
+        String newLine = scanner.nextLine();
+        System.out.print("Enter the line number to insert before: ");
+        int lineNumber = scanner.nextInt();
+        lines.add(lineNumber - 1, newLine);
+    }
+
+    private static void deleteLine(Scanner scanner) {
+        System.out.print("Enter the line number to delete: ");
+        int lineNumber = scanner.nextInt();
+        if (lineNumber > 0 && lineNumber <= lines.size()) {
+            lines.remove(lineNumber - 1);
+        } else {
+            System.out.println("Invalid line number.");
+        }
+    }
+
+    private static void appendLine(Scanner scanner) {
+        System.out.print("Enter the line to append: ");
+        String newLine = scanner.nextLine();
+        lines.add(newLine);
+    }
+
+    private static void modifyLine(Scanner scanner) {
+        System.out.print("Enter the line number to modify: ");
+        int lineNumber = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        if (lineNumber > 0 && lineNumber <= lines.size()) {
+            System.out.print("Enter the new content for the line: ");
+            String modifiedLine = scanner.nextLine();
+            lines.set(lineNumber - 1, modifiedLine);
+        } else {
+            System.out.println("Invalid line number.");
+        }
+    }
+
+    private static void saveAndExit() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("File saved. Exiting program.");
+        System.exit(0);
+    }
+}
